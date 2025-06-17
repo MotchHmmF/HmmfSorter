@@ -7,7 +7,7 @@ Solver::Solver(GameBoard& gameboard) : gameBoardRef(gameboard) {
     pos.y = gameBoardRef.gridSize * 1.5;
     target = pos;
 
-    moveDistance = gameBoardRef.gridSize * 8;
+    moveDistance = gameBoardRef.gridSize*8;
     renderSize = gameBoardRef.gridSize / 4;
     textSize = gameBoardRef.gridSize / 2;
     gridSize = gameBoardRef.gridSize;
@@ -86,7 +86,7 @@ void Solver::Update() {
     if (pos.x != target.x && pos.y != target.y) {
         Move();
     } else {
-        SelectionSort();
+        BubbleSort();
     }
 };
 
@@ -169,3 +169,75 @@ void Solver::SelectionSort() {
         Finished();
     }
 };
+
+void Solver::BubbleSort() {
+    // std::cout<<"Call"<<std::endl;
+    
+    if (minPos == 0) {
+        // std::cout<<"    init"<<std::endl;
+        headPos = order.size();
+        currPos = 1;
+    }
+
+    if (headPos > 1) {
+        // std::cout<<"n > 1"<<std::endl;
+        if (currPos == 1) {
+            // std::cout<<"    i++"<<std::endl;
+            minPos = 1;
+        };
+
+        if (currPos < headPos) {
+            int px = order.at(currPos-1).first;
+            int py = order.at(currPos-1).second;
+            int cx = order.at(currPos).first;
+            int cy = order.at(currPos).second;
+
+            memory = gameBoardRef.GetPos(px,py);
+            target.x = (cx+1) * gridSize + gridSize*0.5f;
+            target.y = (cy+1) * gridSize + gridSize*0.5f;
+
+            if (gameBoardRef.GetPos(px,py) < gameBoardRef.GetPos(cx,cy)) {
+                // std::cout<<"    Swap"<<std::endl;
+                gameBoardRef.SetPos(px,py,gameBoardRef.GetPos(cx,cy));
+                gameBoardRef.SetPos(cx,cy,memory);
+
+                minPos = currPos;
+            }
+            currPos++;
+        } else {
+            target.x = gridSize + gridSize*0.5f;
+            target.y = gridSize + gridSize*0.5f;
+            
+            headPos = minPos;
+            currPos = 1;
+        }
+    } else {
+        Finished();
+    }
+
+    // headPos = n
+    // minPos = newn
+    // currPos = i
+
+    // int n = order.size();
+
+    // while (n > 1) {
+    //     int newn = 0;
+    //     for (int i = 1; i < n; i++) {
+    //         int px = order.at(i-1).first;
+    //         int py = order.at(i-1).second;
+    //         int cx = order.at(i).first;
+    //         int cy = order.at(i).second;
+    //         if (gameBoardRef.GetPos(px,py) > gameBoardRef.GetPos(cx,cy)) {
+    //             memory = gameBoardRef.GetPos(px,py);
+    //             gameBoardRef.SetPos(px,py,gameBoardRef.GetPos(cx,cy));
+    //             gameBoardRef.SetPos(cx,cy,memory);
+
+    //             newn = i;
+    //         }
+    //     }
+    //     n = newn;
+    // }
+
+    // Finished();
+}

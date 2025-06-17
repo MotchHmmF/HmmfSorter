@@ -3,6 +3,7 @@
 
 
 int main() {
+    // GameBoard board(3,3,100,1,true);
     // GameBoard board(5,5,50,1,true);
     GameBoard board;
     board.Start();

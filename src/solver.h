@@ -32,5 +32,6 @@ class Solver {
         void Finished();
 
         void SelectionSort();
+        void BubbleSort();
 
 };
