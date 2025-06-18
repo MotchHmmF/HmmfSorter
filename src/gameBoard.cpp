@@ -18,7 +18,7 @@ GameBoard::GameBoard(int width, int height, int gridSize, unsigned int seed, boo
 
 void GameBoard::Start() {
     InitWindow((width+2)*gridSize,(height+2)*gridSize,"Hmmf's Sorters");
-    SetTargetFPS(120);
+    SetTargetFPS(60);
 
     BeginDrawing();
     ClearBackground(RAYWHITE);
@@ -28,7 +28,9 @@ void GameBoard::Start() {
     EndDrawing();
 
     while (!WindowShouldClose()) {
-        solver->Update();
+
+        for (int _ = 0; _ < 5; _++) solver->Update();
+
         Draw();
     }
     CloseWindow();

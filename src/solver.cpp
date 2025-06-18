@@ -7,7 +7,7 @@ Solver::Solver(GameBoard& gameboard) : gameBoardRef(gameboard) {
     pos.y = gameBoardRef.gridSize * 1.5;
     target = pos;
 
-    moveDistance = gameBoardRef.gridSize*8;
+    moveDistance = gameBoardRef.gridSize;
     renderSize = gameBoardRef.gridSize / 4;
     textSize = gameBoardRef.gridSize / 2;
     gridSize = gameBoardRef.gridSize;
@@ -86,7 +86,7 @@ void Solver::Update() {
     if (pos.x != target.x && pos.y != target.y) {
         Move();
     } else {
-        BubbleSort();
+        SelectionSort();
     }
 };
 
@@ -105,26 +105,48 @@ void Solver::Finished() {
     swapping = 0;
 }
 
+unsigned char Solver::GetViaOrder(int pos) {
+    int x = order.at(pos).first;
+    int y = order.at(pos).second;
+    return gameBoardRef.GetPos(x,y);
+};
+
+void Solver::SetViaOrder(int pos, unsigned char val) {
+    int x = order.at(pos).first;
+    int y = order.at(pos).second;
+    gameBoardRef.SetPos(x,y,val);
+};
+
+void Solver::TargetViaOrder(int pos) {
+    if (pos >= 0 && pos < order.size()) {
+        target.x = (order.at(pos).first + 1) * gridSize + gridSize * 0.5f;
+        target.y = (order.at(pos).second + 1) * gridSize + gridSize * 0.5f;
+    }
+};
+
 void Solver::SelectionSort() {
 
     if (headPos < order.size()) {
-        int x, y;
+        // int x, y;
         if (currPos == headPos) {
-            x = order.at(headPos).first;
-            y = order.at(headPos).second;
+            // x = order.at(headPos).first;
+            // y = order.at(headPos).second;
             minPos=headPos;
-            min = gameBoardRef.GetPos(x,y);
+            // min = gameBoardRef.GetPos(x,y);
+            min = GetViaOrder(headPos);
 
             memoryPos=minPos;
             memory=min;
         }
         if (++currPos < order.size()) {
-            x = order.at(currPos).first;
-            y = order.at(currPos).second;
-            unsigned char val = gameBoardRef.GetPos(x,y);
+            // x = order.at(currPos).first;
+            // y = order.at(currPos).second;
+            // unsigned char val = gameBoardRef.GetPos(x,y);
+            unsigned char val = GetViaOrder(currPos);
             
-            target.x = (x+1) * gridSize + gridSize*0.5f;
-            target.y = (y+1) * gridSize + gridSize*0.5f;
+            // target.x = (x+1) * gridSize + gridSize*0.5f;
+            // target.y = (y+1) * gridSize + gridSize*0.5f;
+            TargetViaOrder(currPos);
 
             if (val > min) {
                 min = val;
@@ -132,33 +154,39 @@ void Solver::SelectionSort() {
             }
         } else {
             if (swapping == 0) {
-                x = order.at(headPos).first;
-                y = order.at(headPos).second;
-                target.x = (x+1) * gridSize + gridSize*0.5f;
-                target.y = (y+1) * gridSize + gridSize*0.5f;
+                // x = order.at(headPos).first;
+                // y = order.at(headPos).second;
+                // target.x = (x+1) * gridSize + gridSize*0.5f;
+                // target.y = (y+1) * gridSize + gridSize*0.5f;
+                TargetViaOrder(headPos);
                 swapping++;
             } else if (swapping == 1) {
-                x = order.at(headPos).first;
-                y = order.at(headPos).second;
-                gameBoardRef.SetPos(x,y,0);
-                x = order.at(minPos).first;
-                y = order.at(minPos).second;
-                target.x = (x+1) * gridSize + gridSize*0.5f;
-                target.y = (y+1) * gridSize + gridSize*0.5f;
+                // x = order.at(headPos).first;
+                // y = order.at(headPos).second;
+                // gameBoardRef.SetPos(x,y,0);
+                SetViaOrder(headPos,0);
+                // x = order.at(minPos).first;
+                // y = order.at(minPos).second;
+                // target.x = (x+1) * gridSize + gridSize*0.5f;
+                // target.y = (y+1) * gridSize + gridSize*0.5f;
+                TargetViaOrder(minPos);
                 swapping++;
             } else if (swapping == 2) {
-                x = order.at(minPos).first;
-                y = order.at(minPos).second;
-                gameBoardRef.SetPos(x,y,memory);
-                x = order.at(headPos).first;
-                y = order.at(headPos).second;
-                target.x = (x+1) * gridSize + gridSize*0.5f;
-                target.y = (y+1) * gridSize + gridSize*0.5f;
+                // x = order.at(minPos).first;
+                // y = order.at(minPos).second;
+                // gameBoardRef.SetPos(x,y,memory);
+                SetViaOrder(minPos,memory);
+                // x = order.at(headPos).first;
+                // y = order.at(headPos).second;
+                // target.x = (x+1) * gridSize + gridSize*0.5f;
+                // target.y = (y+1) * gridSize + gridSize*0.5f;
+                TargetViaOrder(headPos);
                 swapping++;
             } else if (swapping == 3) {
-                x = order.at(headPos).first;
-                y = order.at(headPos).second;
-                gameBoardRef.SetPos(x,y,min);
+                // x = order.at(headPos).first;
+                // y = order.at(headPos).second;
+                // gameBoardRef.SetPos(x,y,min);
+                SetViaOrder(headPos,min);
                 swapping=0;
                 headPos++;
                 currPos=headPos;
@@ -187,26 +215,32 @@ void Solver::BubbleSort() {
         };
 
         if (currPos < headPos) {
-            int px = order.at(currPos-1).first;
-            int py = order.at(currPos-1).second;
-            int cx = order.at(currPos).first;
-            int cy = order.at(currPos).second;
+            // int px = order.at(currPos-1).first;
+            // int py = order.at(currPos-1).second;
+            // int cx = order.at(currPos).first;
+            // int cy = order.at(currPos).second;
 
-            memory = gameBoardRef.GetPos(px,py);
-            target.x = (cx+1) * gridSize + gridSize*0.5f;
-            target.y = (cy+1) * gridSize + gridSize*0.5f;
+            // memory = gameBoardRef.GetPos(px,py);
+            memory = GetViaOrder(currPos-1);
+        
+            // target.x = (cx+1) * gridSize + gridSize*0.5f;
+            // target.y = (cy+1) * gridSize + gridSize*0.5f;
+            TargetViaOrder(currPos);
 
-            if (gameBoardRef.GetPos(px,py) < gameBoardRef.GetPos(cx,cy)) {
-                // std::cout<<"    Swap"<<std::endl;
-                gameBoardRef.SetPos(px,py,gameBoardRef.GetPos(cx,cy));
-                gameBoardRef.SetPos(cx,cy,memory);
-
+            // if (gameBoardRef.GetPos(px,py) < gameBoardRef.GetPos(cx,cy)) {
+            if (GetViaOrder(currPos-1) < GetViaOrder(currPos)) {
+                SetViaOrder(currPos-1,GetViaOrder(currPos));
+                SetViaOrder(currPos,memory);
+                // gameBoardRef.SetPos(px,py,gameBoardRef.GetPos(cx,cy));
+                // gameBoardRef.SetPos(cx,cy,memory);
+                
                 minPos = currPos;
             }
             currPos++;
         } else {
-            target.x = gridSize + gridSize*0.5f;
-            target.y = gridSize + gridSize*0.5f;
+            // target.x = gridSize + gridSize*0.5f;
+            // target.y = gridSize + gridSize*0.5f;
+            TargetViaOrder(0);
             
             headPos = minPos;
             currPos = 1;
@@ -240,4 +274,37 @@ void Solver::BubbleSort() {
     // }
 
     // Finished();
+}
+
+void Solver::InsertionSort() {
+
+    if (headPos < order.size()) {
+        if (memoryPos > 0 && GetViaOrder(memoryPos-1) < GetViaOrder(memoryPos)) {
+            TargetViaOrder(memoryPos-1);
+            memory = GetViaOrder(memoryPos);
+            SetViaOrder(memoryPos,GetViaOrder(memoryPos-1));
+            SetViaOrder(memoryPos-1,memory);
+            memoryPos--;
+        } else {
+            headPos++;
+            memoryPos=headPos;
+            TargetViaOrder(headPos);
+        }
+    } else {
+        Finished();
+    }
+
+    // int i = 0;
+    // while (i < order.size()) {
+    //     int j = i;
+    //     while (j > 0 && GetViaOrder(j-1) > GetViaOrder(j)) {
+    //         memory = GetViaOrder(j);
+    //         setViaOrder(j,GetViaOrder(j-1));
+    //         setViaOrder(j-1,memory);
+    //         j--;
+    //     }
+    //     i++;
+    // }
+
+
 }

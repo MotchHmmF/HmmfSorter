@@ -31,7 +31,12 @@ class Solver {
         void Move();
         void Finished();
 
+        unsigned char GetViaOrder(int pos);
+        void SetViaOrder(int pos, unsigned char val);
+        void TargetViaOrder(int pos);
+
         void SelectionSort();
         void BubbleSort();
+        void InsertionSort();
 
 };
