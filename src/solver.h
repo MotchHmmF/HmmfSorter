@@ -2,6 +2,7 @@
 
 #include <raylib.h>
 #include <vector>
+#include <stack>
 
 class GameBoard;
 
@@ -15,6 +16,8 @@ class Solver {
         Vector2 pos{0,0};
         Vector2 target{0,0};
         int moveDistance;
+
+        bool faster;
 
         int renderSize;
         int textSize;
@@ -38,5 +41,6 @@ class Solver {
         void SelectionSort();
         void BubbleSort();
         void InsertionSort();
+        // void MergeSort();
 
 };

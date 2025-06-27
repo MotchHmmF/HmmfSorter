@@ -15,6 +15,8 @@ Solver::Solver(GameBoard& gameboard) : gameBoardRef(gameboard) {
     min = gameBoardRef.GetPos(0,0);
     memory = gameBoardRef.GetPos(0,0);
 
+    faster = true;
+
     GenerateOrder();
 
 };
@@ -27,7 +29,7 @@ void Solver::GenerateOrder() {
             y = 0;
         }
         if (x < gameBoardRef.width) {
-            std::cout << x << "," << y << std::endl;
+            // std::cout << x << "," << y << std::endl;
             order.push_back(std::make_pair(x,y));
         }
         y += 1;
@@ -36,58 +38,72 @@ void Solver::GenerateOrder() {
 }
 
 void Solver::Draw() {
-    // Solver Pos
-    DrawCircle(pos.x,pos.y,renderSize,Color{ 0, 121, 241, 255 });
-    // if (gameBoardRef.drawNums) {
-    //     DrawCircle(pos.x,pos.y,renderSize,Color{ 0, 121, 241, 20 });
-    // } else {
-    //     DrawCircle(pos.x,pos.y,renderSize,Color{ 0, 121, 241, 255 });
-    // }
-    
-    // Memory Vals
-    DrawText("Min:",1,1,textSize,BLACK);
-    if (gameBoardRef.drawNums) {
-        DrawText(TextFormat("%d", min), gridSize, 1, textSize, BLACK);
-    } else {
-        DrawRectangle(gridSize,1,textSize,textSize,Color{min,0,0,255});
-    }
-    
-    DrawText("Memory:",textSize*4,1,textSize,BLACK);
-    if (gameBoardRef.drawNums) {
-        DrawText(TextFormat("%d", memory), gridSize*4, 1, textSize, BLACK);
-    } else {
-        DrawRectangle(gridSize*4,1,textSize,textSize,Color{memory,0,0,255});
-    }
 
-    // ClearBackground(RAYWHITE);
-    // for (int i = 0; i < order.size(); i++) {
-    //     DrawText(TextFormat("%d", i),(order.at(i).first + 1) * gridSize,(order.at(i).second + 1) * gridSize,textSize,WHITE);
-    // }
+    if (!faster) {
+        // Solver Pos
+        DrawCircle(pos.x,pos.y,renderSize,Color{ 0, 121, 241, 255 });
+        // if (gameBoardRef.drawNums) {
+        //     DrawCircle(pos.x,pos.y,renderSize,Color{ 0, 121, 241, 20 });
+        // } else {
+        //     DrawCircle(pos.x,pos.y,renderSize,Color{ 0, 121, 241, 255 });
+        // }
+        
+        // Memory Vals
+        DrawText("Min:",1,1,textSize,BLACK);
+        if (gameBoardRef.drawNums) {
+            DrawText(TextFormat("%d", min), gridSize, 1, textSize, BLACK);
+        } else {
+            DrawRectangle(gridSize,1,textSize,textSize,Color{min,0,0,255});
+        }
+        
+        DrawText("Memory:",textSize*4,1,textSize,BLACK);
+        if (gameBoardRef.drawNums) {
+            DrawText(TextFormat("%d", memory), gridSize*4, 1, textSize, BLACK);
+        } else {
+            DrawRectangle(gridSize*4,1,textSize,textSize,Color{memory,0,0,255});
+        }
+
+        // ClearBackground(RAYWHITE);
+        // for (int i = 0; i < order.size(); i++) {
+        //     DrawText(TextFormat("%d", i),(order.at(i).first + 1) * gridSize,(order.at(i).second + 1) * gridSize,textSize,WHITE);
+        // }
+    }
+    
 
 };
 
 void Solver::Move() {
-    Vector2 direction = { target.x - pos.x, target.y - pos.y };
-    float length = sqrtf(direction.x * direction.x + direction.y * direction.y);
+    if (!faster) {
+        Vector2 direction = { target.x - pos.x, target.y - pos.y };
+        float length = sqrtf(direction.x * direction.x + direction.y * direction.y);
 
-    if (length < moveDistance || length == 0) {
+        if (length < moveDistance || length == 0) {
+            pos = target;
+            return;
+        }
+
+        direction.x /= length;
+        direction.y /= length;
+
+        pos.x += direction.x * moveDistance;
+        pos.y += direction.y * moveDistance;
+    } else {
         pos = target;
-        return;
     }
-
-    direction.x /= length;
-    direction.y /= length;
-
-    pos.x += direction.x * moveDistance;
-    pos.y += direction.y * moveDistance;
 }
 
 void Solver::Update() {
-    if (pos.x != target.x && pos.y != target.y) {
-        Move();
+    if (!faster){
+        if (pos.x != target.x && pos.y != target.y) {
+            Move();
+        } else {
+            BubbleSort();
+        }
     } else {
+        Move();
         SelectionSort();
     }
+    
 };
 
 void Solver::Finished() {
@@ -308,3 +324,26 @@ void Solver::InsertionSort() {
 
 
 }
+
+// void Solver::MergeSort() {
+//     std::vector<unsigned char> toSort {100, 234, 63, 152, 167, 102, 2, 63, 90, 220, 17};
+
+//     std::cout << std::endl << "Init" << std::endl;
+//     for (unsigned char print : toSort) std::cout << static_cast<int>(print) << " ";
+//     std::cout << std::endl << std::endl;
+
+//     int n = toSort.size();
+
+//     for (int curr = 1; curr <= n-1; curr = 2*curr) {
+//         for (int left = 0; left < n-1; left += 2*curr) {
+//             int mid = std::min(left + curr - 1, n-1);
+//             int right = std::min(left + 2 * curr - 1, n-1);
+
+//         }
+//     }
+    
+
+//     std::cout << std::endl << "Final" << std::endl;
+//     for (unsigned char print : toSort) std::cout << static_cast<int>(print) << " ";
+//     std::cout << std::endl << std::endl;
+// }

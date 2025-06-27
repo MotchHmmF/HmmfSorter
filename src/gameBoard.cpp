@@ -29,10 +29,13 @@ void GameBoard::Start() {
 
     while (!WindowShouldClose()) {
 
-        for (int _ = 0; _ < 5; _++) solver->Update();
+        for (int _ = 0; _ < 10000; _++) solver->Update();
 
         Draw();
     }
+
+    // solver->Update();
+
     CloseWindow();
 };
 
